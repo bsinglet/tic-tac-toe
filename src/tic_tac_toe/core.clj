@@ -1,6 +1,7 @@
 ;; Tic-Tac-Toe
 ;; Created by: Benjamin M. Singleton
 ;; Created: 04-24-2017
+
 (ns tic-tac-toe.core
   (:gen-class))
 
@@ -45,30 +46,30 @@
 (defn won-row
   "Check if a row is filled only with one player's pieces. Returns winning player letter or nil."
   [board row-number]
-  (let [my-row (extract-row board row-number)]
-    (if (every? #(= (first my-row) %) my-row)
-    	(first my-row))))
+  (let [my-row (extract-row board row-number) player (first my-row)]
+    (if (every? #(= player %) my-row)
+    	player)))
 
 (defn won-column
   "Check if a column is filled only with one player's pieces. Returns winning player letter or nil."
   [board col-number]
-  (let [my-col (extract-col board col-number)]
-    (if (every? #(= (first my-col) %) my-col)
-    	(first my-col))))
+  (let [my-col (extract-col board col-number) player (first my-col)]
+    (if (every? #(= player %) my-col)
+    	player)))
 
 (defn won-left-right-diagonal
   "Check if upper-left to lower-right diagonal is filled only with one player's pieces. Returns winning player letter or nil."
   [board]
-  (let [my-diagonal (extract-left-right-diagonal board)]
-    (if (every? #(= (first my-diagonal) %) my-diagonal)
-    	(first my-diagonal))))
+  (let [my-diagonal (extract-left-right-diagonal board) player (first my-diagonal)]
+    (if (every? #(= player %) my-diagonal)
+    	player)))
 
 (defn won-right-left-diagonal
   "Check if lower-left to upper-right diagonal is filled only with one player's pieces. Returns winning player letter or nil."
   [board]
-  (let [my-diagonal (extract-right-left-diagonal board)]
-    (if (every? #(= (first my-diagonal) %) my-diagonal)
-    	(first my-diagonal))))
+  (let [my-diagonal (extract-right-left-diagonal board) player (first my-diagonal)]
+    (if (every? #(= player %) my-diagonal)
+    	player)))
 
 (defn valid-move?
   "Check if a move to position is valid."
@@ -83,7 +84,7 @@
       (won-left-right-diagonal board)
       (won-right-left-diagonal board)))
 
-(defn game-tied
+(defn game-tied?
   "Check if every position is filled, without checking for three in a row anywhere."
   [board]
   (every? #(not (= nil %)) (vals board)))
@@ -99,36 +100,31 @@
 (defn make-move
   "Place player's piece at position on board, or return nil."
   [board position player]
-  (if (or (< position 0) (> position 8))
-      nil
-      (if (= nil (get board position))
-      	  (assoc board position player)
-      	  nil)))
+  (if (and (> position -1) (< position 9))
+    (if (= nil (get board position))
+      (assoc board position player))))
 
 ;; User interface code
 
 (defn render-position
   "Return the letter corresponding to position, with \"_\" as an empty space."
   [board position]
-  (if (= nil (get board position))
+  (let [result (get board position)]
+    (if (= nil result)
       "_"
-      (get board position)))
+      result)))
 
 (defn render-row
   "Return the string representing a given row, with one space between each position."
   [board row-number]
-  (let [row-start (* row-number 3)]
-       (str (render-position board row-start)
-       	    " "
-	    (render-position board (+ 1 row-start))
-	    " "
-	    (render-position board (+ 2 row-start)))))
+  (let [row-start (* row-number 3) row-end (+ 3 row-start)]
+       (apply str (interleave (map #(render-position board %) (range row-start row-end)) (take 3 (repeat " "))))))
 	    
 (defn print-board
   "Print out a representation of the board to the console."
   [board]
   (doseq [row (range 0 (inc 2))]
-    (println (render-row board row))))
+    (println (clojure.string/trim (render-row board row)))))
 
 ;; borrowed from peg-thing
 ;; https://github.com/flyingmachine/pegthing/blob/master/src/pegthing/core.clj
@@ -164,7 +160,7 @@
           (prompt-move board player))
         (if (winning-move new-board input)
           (println (str "Player " player " wins!"))
-	  (if (game-tied new-board)
+	  (if (game-tied? new-board)
 	    (println "Game ends in a tie!")
 	    (prompt-move new-board (other-player player))))))
     (do
