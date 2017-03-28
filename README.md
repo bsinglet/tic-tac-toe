@@ -1,32 +1,9 @@
 # tic-tac-toe
-
-FIXME: description
-
-## Installation
-
-Download from http://example.com/FIXME.
+A command-line implementation of the classic game. Written to practice development in Clojure. Inspired by, and with some code borrowed from https://github.com/flyingmachine/pegthing.
 
 ## Usage
-
-FIXME: explanation
-
+    $ lein uberjar
     $ java -jar tic-tac-toe-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
 
 ## License
 
@@ -34,4 +11,3 @@ Copyright © 2017 FIXME
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
-# tic-tac-toe
